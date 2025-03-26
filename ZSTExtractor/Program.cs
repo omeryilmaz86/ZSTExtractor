@@ -1,10 +1,11 @@
-﻿using System;
-using System.IO;
-using System.Net;
-using ZstdSharp;
-using SharpCompress.Archives;
+﻿using SharpCompress.Archives;
 using SharpCompress.Archives.Tar;
 using SharpCompress.Common;
+using System;
+using System.IO;
+using System.Net;
+using static System.Net.WebRequestMethods;
+using File = System.IO.File;
 
 namespace ZSTExtractor
 {
@@ -12,34 +13,46 @@ namespace ZSTExtractor
     {
         static void Main(string[] args)
         {
+
+            string downloadDir = "downloads";  // C:\Users\Omer\Desktop\GITHUB\ZSTExtractor\ZSTExtractor\bin\Debug\downloads
+            downloadDir = "C://Users//Omer//";
+
             // İndirilecek dosyaların listesi
             string[] urls = {
                 // linkleri buraya ekleyin
-                "https://URL_1.tar.zst",
-                "https://URL_2.tar.zst",
+                "https://www.example.com.tr/aaa.tar.zst",
+                "https://www.example.com.tr/bbb.tar.zst"
             };
 
-            string downloadDir = "downloads";
             Directory.CreateDirectory(downloadDir);
 
             foreach (var url in urls)
             {
-                string fileName = Path.GetFileName(url);
-                string zstFilePath = Path.Combine(downloadDir, fileName);
-                string tarFilePath = Path.Combine(downloadDir, Path.GetFileNameWithoutExtension(fileName) + ".tar");
+                try
+                {
+                    string fileName = Path.GetFileName(url);
+                    string zstFilePath = Path.Combine(downloadDir, fileName);
+                    string tarFilePath = Path.Combine(downloadDir, Path.GetFileNameWithoutExtension(fileName) + ".tar");
 
-                // Dosyayı indir
-                DownloadFile(url, zstFilePath);
+                    // Dosyayı indir
+                    DownloadFile(url, zstFilePath);
 
-                // ZST dosyasını aç
-                DecompressZst(zstFilePath, tarFilePath);
+                    // Opsiyonel
+                    // ZST dosyasını açar
+                    // DecompressZst(zstFilePath, tarFilePath);
 
-                // TAR dosyasını aç
-                ExtractTar(tarFilePath, downloadDir);
+                    // Opsiyonel
+                    // TAR dosyasını açar
+                    // ExtractTar(tarFilePath, downloadDir);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Hata oluştu! URL: {url} Hata mesajı: {ex.Message}");
+                    continue;  // Diğer URL'lere devam et
+                }
             }
 
-
-            Console.WriteLine($"TÜMÜ İNDİRİLDİ");
+            Console.WriteLine("TÜMÜ İNDİRİLDİ");
             Console.ReadLine();
         }
 
